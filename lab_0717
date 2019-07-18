@@ -1,0 +1,318 @@
+bit.ly/SKCC_3
+강사 github  -->  yaksoo39 
+
+part1 
+VMware 안에 시험과 질문  --> ex) HDFS user 생성,   JAVA 1.8 설치
+
+본인 user 생성해서 들어가야 하는데 grant 로 권한을 줘야 한다
+모든 DB 권한 부여 *.*
+
+part2
+분석
+
+CM설치 준비 - CDH cluster 올리기
+
+centos@ip   or  /etc/hosts
+
+github 설치 후 파일 공유
+
+CM, M1, D1, D2, D3 
+
+CM node 에  DB설치  --> CM manager, daemon 설치 --> CM wizard open
+
+host1  13.209.206.8      172.31.0.147
+host2  13.209.212.103   172.31.2.54
+host3  13.209.218.18    172.31.7.7
+host4  13.209.219.190   172.31.2.235
+host5  15.164.112.177   172.31.4.97
+
+git remote add origin https://github.com/nazgoloom/datalab.git
+git push -u origin master
+
+#
+##
+link --> 사진 등
+```
+    코드
+```
+
+
+1. Check vm.swappiness on all your nodes
+swap 확인
+sysctl vm.swappiness
+
+영구 적용 위해 /etc/sysctl.conf 추가 필요
+sudo vi /etc/sysctl.conf --> vm.swappiness = 1 추가
+
+2. Show the mount attributes of your volume(s)
+아래 명령어로 확인
+df -h
+
+3. If you have ext-based volumes, list the reserve space setting
+아래 명령어로 확인
+fsck -a /dev/nvme0n1p1
+
+4. Disable transparent hugepage support
+cat /sys/kernel/mm/transparent_hugepage/enabled
+[always] madvise never --> 이렇게 나오면 enabled 상태
+always madvise [never] --> 이렇게 나와야 disabled 상태
+
+sudo vi /etc/rc.d/rc.local 아래 명령어 추가 
+
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+echo never > /sys/kernel/mm/transparent_hugepage/defrag
+권한 변경
+sudo chmod +x /etc/rc.d/rc.local 
+
+sudo vi /etc/default/grub 실행해서 아래 명령어 입력
+transparent_hugepage=never
+
+아래 명령어 실행
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
+5. List your network interface configuration
+ip addr 명령어 실행
+
+6. Show that forward and reverse host lookups are correctly resolved
+centos 계정 비밀번호 설정
+sudo passwd centos --> admin으로 통일
+
+ssh 설정 변경
+sudo vi /etc/ssh/sshd_config 열기
+PasswordAuthentication yes 주석 풀기
+PasswordAuthentication no 주석 처리
+
+hostname 설정
+sudo hostnamectl set-hostname 노드번호.team3.com
+ex) nd1.team3.com
+
+sudo vi /etc/hosts 설정
+172.31.0.147    nd1.team3.com nd1
+172.31.2.54     nd2.team3.com nd2
+172.31.7.7      nd3.team3.com nd3
+172.31.2.235   nd4.team3.com nd4
+172.31.4.97    nd5.team3.com nd5
+
+getent hosts  --> hosts 설정 확인
+
+
+sudo reboot 로 재시작
+
+재부팅 후 ssh로 각 노드들 접속해보기
+
+7. Show the nscd service is running
+sudo yum install nscd -y
+sudo systemctl start nscd --> 서비스 시작
+systemctl status nscd -> 서비스 상태 확인
+
+8. Show the ntpd service is running
+sudo yum install ntp -y
+sudo systemctl start ntpd --> 서비스 시작
+systemctl status ntpd --> 서비스 상태 확인
+
+------------------------------------------------------------------------------------------------------------------------------------------
+JDBC 5.15.2 설치필요
+
+repo 파일 설정
+
+- Configure the repository for CM 5.15.2
+  $ sudo yum install -y wget
+  $ sudo wget https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/cloudera-manager.repo -P /etc/yum.repos.d/
+  
+ 
+ java 1.8
+sudo yum install java-1.8.0-openjdk-devel.x86_64
+ 
+ jdbc 설치 확인 --> 
+
+jdbc
+wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz
+tar zxvf mysql-connector-java-5.1.47.tar.gz
+
+sudo mkdir -p /usr/share/java/
+
+cd mysql-connector-java-5.1.47
+sudo cp mysql-connector-java-5.1.47-bin.jar /usr/share/java/mysql-connector-java.jar
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+1. System Configuration Check
+
+
+1. Check vm.swappiness on all your nodes
+ 1) swap 확인 
+  -> sysctl vm.swappiness
+ 2) 영구 적용 위해 /etc/sysctl.conf 추가 필요 
+  -> vi /etc/sysctl.conf --> vm.swappiness = 1 추가
+![photo.PNG](https://github.com/jellybean18/SKCC_TEAM3_Prequal/blob/master/image/1.png?raw=true)
+![photo.PNG](https://github.com/jellybean18/SKCC_TEAM3_Prequal/blob/master/image/2.png?raw=true)
+  
+
+2. Show the mount attributes of your volume(s)
+ 1) 명령어로 확인 -> df -h
+
+3. If you have ext-based volumes, list the reserve space setting
+ 1) 명령어로 확인 -> fsck -a /dev/nvme0n1p1
+ 
+4. Disable transparent hugepage support
+ 1) cat /sys/kernel/mm/transparent_hugepage/enabled 상태확인
+    [always] madvise never --> 이렇게 나오면 enabled 상태
+    always madvise [never] --> 이렇게 나와야 disabled 상태
+ 2) sudo vi /etc/rc.d/rc.local 편집하여 아래내용 추가
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag
+ 3) 권한 변경 -> chmod +x /etc/rc.d/rc.local 
+ 4) sudo vi /etc/default/grub 편집하여 아래내용 추가
+    transparent_hugepage=never
+ 5) 명령어 실행 -> grub2-mkconfig -o /boot/grub2/grub.cfg
+ 
+5. List your network interface configuration
+ 1) ip addr 실행하여 상태확인
+ 
+6. Show that forward and reverse host lookups are correctly resolved
+
+ 1) centos 계정 비밀번호 설정
+   sudo passwd centos --> admin으로 통일
+   
+ 2) ssh 설정 변경
+   sudo vi /etc/ssh/sshd_config 편집하여 아래내용 변경
+   PasswordAuthentication yes 주석 풀기
+   PasswordAuthentication no 주석 처리
+   
+ 3) hostname 설정    --> 5대 들어가서 호스트네임 변경  네임은   nd1.jdh.com nd1
+   sudo hostnamectl set-hostname 노드번호.team3.com (ex) nd1.team3.com)
+   
+ Change the hostname (each of the 5 nodes)
+  $ sudo hostnamectl set-hostname nd1.jdh.com
+  $ sudo hostnamectl set-hostname nd2.jdh.com
+  $ sudo hostnamectl set-hostname nd3.jdh.com
+  $ sudo hostnamectl set-hostname nd4.jdh.com
+  $ sudo hostnamectl set-hostname nd5.jdh.com
+   
+   
+ 4) /etc/hosts 설정
+   172.31.0.147 nd1.team3.com nd1
+   172.31.2.54 nd2.team3.com nd2
+   172.31.7.7 nd3.team3.com nd3
+   172.31.2.235 nd4.team3.com nd4
+   172.31.4.97 nd5.team3.com nd5
+ 5) sudo reboot 로 재시작 후 ssh로 각 노드 접속 테스트
+ 
+7. Show the nscd service is running
+ sudo yum install nscd -y
+ sudo systemctl start nscd --> 서비스 시작
+ systemctl status nscd -> 서비스 상태 확인
+ 
+8. Show the ntpd service is running
+ sudo yum install ntp -y
+ sudo systemctl start ntpd --> 서비스 시작
+ systemctl status ntpd --> 서비스 상태 확인
+ 
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 2. Cloudera Manger 구성
+ 
+ 1. CM 5.15.2 Repo 설정 (모든 host)
+ sudo yum install -y wget
+ sudo wget https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/cloudera-manager.repo -P /etc/yum.repos.d/
+ sudo vi /etc/yum.repos.d/cloudera-manager.repo 편집하여 아래내용 변경
+ baseurl=https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/5.15.2/
+
+2. JDK, JDBC 설치(모든 host)
+ 1) jdk -> sudo yum install java-1.8.0-openjdk-devel.x86_64
+ 2) jdbc -> 
+    wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz
+    tar zxvf mysql-connector-java-5.1.47.tar.gz
+    sudo mkdir -p /usr/share/java/
+    cd mysql-connector-java-5.1.47
+    sudo cp mysql-connector-java-5.1.47-bin.jar /usr/share/java/mysql-connector-java.jar
+    
+ 3. yum Install CM (CM host)
+   sudo yum install -y cloudera-manager-daemons cloudera-manager-server
+  
+ 4. Install MySQL server (CM host)
+   sudo yum install -y mariadb-server
+   sudo systemctl enable mariadb
+   sudo systemctl start mariadb
+ 
+ 5. MySQL DB생성 및 권한부여 (CM host)
+ mysql -u root -p --> db 접속
+ 
+  CREATE DATABASE scm DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE amon DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE rman DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE hue DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE metastore DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE sentry DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE nav DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE navms DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+  CREATE DATABASE oozie DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+
+  GRANT ALL ON scm.* TO 'scm'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON amon.* TO 'amon'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON rman.* TO 'rman'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON hue.* TO 'hue'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON metastore.* TO 'hive'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON sentry.* TO 'sentry'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON nav.* TO 'nav'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON navms.* TO 'navms'@'%' IDENTIFIED BY 'password';
+  GRANT ALL ON oozie.* TO 'oozie'@'%' IDENTIFIED BY 'password';
+
+  SHOW DATABASES;
+ 
+  EXIT;
+  
+  # select host, user, password from user;   ??
+
+
+nd1에  training 계정 생성
+# create user 'training'@'%' identified by 'training';
+  GRANT ALL ON *.* TO 'training'@'%' IDENTIFIED BY 'training';
+  FLUSH PRIVILEGES;
+  EXIT;
+
+
+6. cloudera manager 설치
+sudo yum install cloudera-manager-daemons cloudera-manager-server  --> 설치확인 방법은?
+
+7. cloudera manager db 설정
+sudo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password  --> error 발생
+db.mgmt.properries 존재한다면(?)
+sudo rm /etc/cloudera-scm-server/db.mgmt.properties
+
+8. cloudera manager 실행
+sudo systemctl start cloudera-scm-server
+sudo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log --> 로그 확인
+
+
+##3. Install a cluster and deploy CDH
+
+1. host에 node 명 입력 하여 connection test
+
+2. parcel에서 5.15.2 확인 후 선택하여 설치 진행
+
+
+
+
+nd1 --> CM   SNN,  HDFS balancer(B)
+                 HIVE --> hive G/W, HMS, HS2
+				 HUE  --> LB, HS
+				 CM   --> AP, ES, HM, RM, SM, 
+				 Ooosie  --> OS
+				 kafka    -->  G (g/w)
+				 impala   --> ICS, ID, ISS
+
+nd2 --> Master    NN(namenode)
+                  YARN  --> JHS, NM, RM
+				  ZooKeeper  --> S
+				  SPARK  --> HS(spark history)
+				  
+ALL           NM (node manager)
+                spark g/w  --> G
+				DN(datanode)
+				ID(impala daemon)
+				
+
+
+SPARK 설치 방법 
+패키지download  apache spark2  --> CSD 추가 --> CM 서버 restart
