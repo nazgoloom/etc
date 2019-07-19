@@ -1,1 +1,44 @@
 필기시험
+test_jdh_0719
+
+default location for the warehouse directory
+
+what property is used to specify the block size of a HDFS
+
+HDFS block size property
+
+sqoop import option
+
+a file contain into hdfs
+
+yarn-site.xml
+
+yarn-default.xml
+
+HDFS DESCRIBE
+
+create table storage format
+
+reading kafka topic
+
+storing messages in kafaka
+
+"on a cluster which is not running HDFS High Availability", "which four pieces of information does the namenode store on disk"
+
+secondary namenode daemon
+
+"what does each block of a file contain when it is written into HDFS"
+
+"each block has a header containing metadata"
+
+"each block has a header and footer containing metadata"
+
+"what is the default location for the warehouse directory"
+
+"what component of HDFS is responsible for maintaining the namespace of the distributed file system"
+
+"3 main components of flume agent"
+
+"the replication factor of all the files in the cluster"
+
+"which yarn daemon optimizes cluster utilization by arbitrating requests"
